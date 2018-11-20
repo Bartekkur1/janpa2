@@ -10,6 +10,7 @@ class Security
      */
     public static function Map($path)
     {
+        $path = preg_split('/\//', $path, 0, PREG_SPLIT_NO_EMPTY);
         array_push(self::$secured_paths, $path);
     }
 
@@ -27,12 +28,10 @@ class Security
      */
     public static function Verify($path)
     {
-        foreach(self::$secured_paths as $secured_path) {
-            if($path == $secured_path) {
-                if(!self::Authenticate()) {
-                    die("Permision Denied");
-                }
-            }
+        //TODO repair this
+        if($path[0] == self::$secured_paths[0][0]) {
+            echo "permision denied";
+            die();
         }
     }
 }

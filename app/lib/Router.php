@@ -66,11 +66,17 @@ class Router
      */
     public function Map($path, $controller_func)
     {
+        $params = array();
         $controller = explode("@", $controller_func)[0];
         $function = explode("@", $controller_func)[1];
-        $params = explode("/", $controller_func);
-        unset($params[0], $params[1]);
-        $route = new Route("/" . explode("/", $path)[1], $controller, $function, $params);
+        $path = preg_split('/\//', $path, 0, PREG_SPLIT_NO_EMPTY);
+        foreach ($path as $key => $value) {
+            if(preg_match('/(:)/', $value)) {
+                array_push($params, ltrim($value, ":"));
+                unset($path[$key]);
+            }
+        }
+        $route = new Route($path, $controller, $function, $params);
         array_push($this->routes, $route);
     }
 
@@ -79,27 +85,18 @@ class Router
      */
     public function Start()
     {
-        $path = !empty($_GET["path"]) ? "/" . explode("/", $_GET["path"])[0] : "/";
-        $full_path = !empty($_GET["path"]) ? explode("/", $_GET["path"]) : array();
-        foreach ($this->routes as $route) {
-            if ($route->path == $path) {
-                //TODO security middleware here somehow
-                Security::Verify($route->path);
+        $path = isset($_GET["path"]) ? preg_split('/\//', $_GET["path"], 0, PREG_SPLIT_NO_EMPTY) : array("/");
+        foreach($this->routes as $route) {
+            //TODO create function to check difrences by keys
+            if(count(array_diff_assoc($path, $route->path)) == count($route->params)) {
+                Security::Verify($path);
                 $this->FileCheck($route->controller);
                 $controllerObject = $this->ControllerCheck($route->controller);
                 $this->FunctionCheck($controllerObject, $route->function);
-                foreach ($route->params as $id => $param) {
-                    if (!empty($full_path[$id - 1])) {
-                        array_push($this->method_params, $full_path[$id - 1]);
-                    } else {
-                        array_push($this->method_params, null);
-                    }
-                }
-                call_user_func_array(array($controllerObject, $route->function), $this->method_params);
-                die;
+                call_user_func_array(array($controllerObject, $route->function), array_diff($path, $route->path));
+                die();
             }
         }
-        //TODO error rendering
-        echo "page not found";
-    }
+        echo "not found";
+    }   
 }
