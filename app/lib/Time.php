@@ -1,8 +1,7 @@
-<?php 
+<?php
 
 class Time
 {
-
     public $date_time;
 
     function __construct()
@@ -12,8 +11,8 @@ class Time
     }
 
     /**
-     * returs data time in given order
-     * @param string $order default ("Y-m-d")
+     * @param string $order "Y-m-d"
+     * @return string returns date in given order
      */
     public function get_date($order = "Y-m-d")
     {
@@ -21,7 +20,7 @@ class Time
     }
 
     /**
-     * returns curent time H:i:s
+     * @return string
      */
     public function get_time()
     {
@@ -29,9 +28,10 @@ class Time
     }
 
     /**
-     * return curent date time Y-m-d H:i:s
+     * @return string
      */
-    public function get_datetime() {
+    public function get_datetime()
+    {
         return $this->date_time->format("Y-m-d H:i:s");
     }
 
