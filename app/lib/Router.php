@@ -87,7 +87,10 @@ class Router
     {
         $path = isset($_GET["path"]) ? preg_split('/\//', $_GET["path"], 0, PREG_SPLIT_NO_EMPTY) : array("/");
         foreach($this->routes as $route) {
-            if(count(array_diff_assoc($path, $route->path)) == count($route->params)) {
+            foreach($route->params as $param) {
+                array_pop($path);
+            }
+            if(count(array_diff_assoc($path, $route->path)) == 0 && count($path) > 0) {
                 Security::Verify($path);
                 $this->FileCheck($route->controller);
                 $controllerObject = $this->ControllerCheck($route->controller);

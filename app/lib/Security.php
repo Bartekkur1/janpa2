@@ -14,6 +14,10 @@ class Security
         array_push(self::$secured_paths, $path);
     }
 
+    public static function Authorize() {
+
+    }
+
     /**
      * This function is for edition, here you can create your own authorize system.
      * @return bool authenticated or nah
@@ -28,7 +32,11 @@ class Security
      */
     public static function Verify($path)
     {
-        var_dump(self::$secured_paths);
-        var_dump($path);
+        foreach(self::$secured_paths as $secured_path) {
+            if(count(array_diff_assoc($secured_path, $path)) == 0) {
+                if(!self::Authenticate())
+                    ErrorHandler::ThrowNew("Permision denied", "You don't have permision to view this route", 401);
+            }
+        }
     }
 }
