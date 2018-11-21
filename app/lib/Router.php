@@ -26,6 +26,11 @@ class Router
     private $routes = array();
     private $method_params = array();
 
+    function __construct($Security = null)
+    {
+        $this->Security = $Security;
+    }
+
     /**
      * @param $controller controller name to check if exists
      * @return stdClass exists or nah
@@ -33,7 +38,9 @@ class Router
     private function ControllerCheck($controller)
     {
         if (!class_exists($controller))
-            die("$controller file not found");
+            ErrorHandler::ThrowNew("Controller not found!",
+            "Requested controller '$controller' could not be found " . debug_backtrace()[0]["file"] .
+            " at line " . debug_backtrace()[0]["line"] . "" , 400);        
         return new $controller;
     }
 
@@ -44,7 +51,9 @@ class Router
     private function FileCheck($name)
     {
         if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php"))
-            die("$name file not found");
+            ErrorHandler::ThrowNew("File not found!",
+            "Requested file '$file' could not be found " . debug_backtrace()[0]["file"] .
+            " at line " . debug_backtrace()[0]["line"] . "" , 400);     
         return include_once $_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php";
     }
 
@@ -56,7 +65,8 @@ class Router
     private function FunctionCheck($controllerObject, $function)
     {
         if (!method_exists($controllerObject, $function))
-            die("$function not found in given object");
+            ErrorHandler::ThrowNew("Controller function not found!",
+            get_class($controllerObject) . " does not contain method called '$function' check your routing", 400);     
         return true;
     }
 
@@ -76,6 +86,7 @@ class Router
                 unset($path[$key]);
             }
         }
+        $path = count($path) == 0 ? array("/") : $path;
         $route = new Route($path, $controller, $function, $params);
         array_push($this->routes, $route);
     }
@@ -91,7 +102,7 @@ class Router
                 array_pop($path);
             }
             if(count(array_diff_assoc($path, $route->path)) == 0 && count($path) > 0) {
-                Security::Verify($path);
+                isset($this->Security) ? $this->Security->Verify($path) : "";
                 $this->FileCheck($route->controller);
                 $controllerObject = $this->ControllerCheck($route->controller);
                 $this->FunctionCheck($controllerObject, $route->function);

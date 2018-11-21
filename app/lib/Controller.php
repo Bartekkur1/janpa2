@@ -1,50 +1,44 @@
 <?php
 
-class Controller
+class Controller extends Loader
 {
-
     function __construct()
     {
-        $this->Input = new Input();
+        $this->LoadLib("Input");
+    }   
+
+    /**
+     * @param array $data array with data to parse intro json object
+     * @param int $status http status code
+     */
+    public function JsonResponse($data = array(), $status = 200) {
+        http_response_code($status);
+        echo json_encode($data);
     }
 
     /**
-     * Created for extreme cases
+     * @param string $html_message html content to show on page
+     * @param int $status http status code
      */
-    public function load_all_models()
-    {
-        foreach (glob($_SERVER['DOCUMENT_ROOT'] ."/app/model/*.php") as $model)
-        {
-            require_once($model);
-            $model_name = basename($model, ".php");
-            $this->$model_name = new $model_name;
-        }
+    public function Response($html_message, $status = 200) {
+        http_response_code($status);
+        echo $html_message;
     }
-
-    /**
-     * @param $model_name string model name to include / don't use .php
-     */
-    public function load_model($model_name)
-    {
-        if(file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php")) {
-            require_once $_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php";
-        } else {
-            echo "Model named : $model_name not found";
-            die;
-        }
-        $this->$model_name = new $model_name;
-    }
-
+ 
     /**
      * view render with variables
      * @param string $file view file name
      * @param array $variables array with data
      */
-    public function render($file, $variables = array())
+    public function Render($file, $variables = array(), $status)
     {
         if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/templates/" . $file . ".php")) {
-            echo "view '$file' not found";
+            ob_end_clean();
+            ErrorHandler::ThrowNew("Template not found!",
+            "Requested template '$file' could not be found " . debug_backtrace()[0]["file"] .
+            " at line " . debug_backtrace()[0]["line"] . "" , 400);
         } else {
+            http_response_code($status);
             extract($variables);
             ob_start();
             require $_SERVER["DOCUMENT_ROOT"] . "/app/templates/" . $file . ".php";

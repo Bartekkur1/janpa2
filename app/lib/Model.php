@@ -1,10 +1,10 @@
 <?php
 
-class Model
+class Model extends Loader
 {
     function __construct()
     {
-        $this->qb = new QueryBuilder();
+        $this->LoadLib("QueryBuilder");
     }
 }
 

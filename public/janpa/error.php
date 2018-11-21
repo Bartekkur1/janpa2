@@ -20,10 +20,10 @@
 
             <div class="p-4 mb-2" style="background-color: white; border-radius: 10px; box-shadow: 10px 5px 51px rgba(0,0,0,0.50)">
                 <img class="float-md-right float-none" src="/public/janpa/janpa-logo.png" alt="Janpa" style="height: 80px; border-radius: 10px;">
-                <h1 class="display-3"><?=$title?></h1>
-                <p class="lead">Janpa has come across problem...</p>
+                <h1 class="display-4"><?=$title?></h1>
+                <p class="lead">Janpa has come across a problem...</p>
                 <hr class="my-4">
-                <h2><?=$message?></h2>
+                <h4><?=$message?></h4>
             </div>
         </div>
     </section>

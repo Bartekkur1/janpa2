@@ -5,10 +5,14 @@
         private $model;
 
         function __construct() {
-
+            parent::__construct();
         }
 
         public function index() {
-            echo "Hi, Im test controller. I like testing.";
+            // echo "Hi, Im test controller. I like testing.";
+            $this->JsonResponse(array(
+                "name" => "test",
+                "surname" => "testimus"
+            ));
         }
     }

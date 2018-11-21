@@ -1,4 +1,5 @@
 <?php
+
 class Input
 {
 
@@ -7,7 +8,7 @@ class Input
      * @param string $name post input name
      * @return var input
      */
-    public function post($name = null)
+    public function Post($name = null)
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (isset($name)) {
@@ -23,9 +24,9 @@ class Input
     /**
      * Function to get $_GET input
      * @param string $name get input name
-     * @return var input
+     * @return var input from get
      */
-    public function get($name = null)
+    public function Get($name = null)
     {
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             if (isset($name)) {
@@ -40,10 +41,10 @@ class Input
 
     /**
      * Function to get $_FILE input
-     * @param type $name
-     * @return type
+     * @param string $name
+     * @return file file object
      */
-    public function file($name = null)
+    public function File($name = null)
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (isset($name)) {
