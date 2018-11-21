@@ -28,10 +28,7 @@ class Security
      */
     public static function Verify($path)
     {
-        //TODO repair this
-        if($path[0] == self::$secured_paths[0][0]) {
-            echo "permision denied";
-            die();
-        }
+        var_dump(self::$secured_paths);
+        var_dump($path);
     }
 }

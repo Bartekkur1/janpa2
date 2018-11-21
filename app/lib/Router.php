@@ -87,7 +87,6 @@ class Router
     {
         $path = isset($_GET["path"]) ? preg_split('/\//', $_GET["path"], 0, PREG_SPLIT_NO_EMPTY) : array("/");
         foreach($this->routes as $route) {
-            //TODO create function to check difrences by keys
             if(count(array_diff_assoc($path, $route->path)) == count($route->params)) {
                 Security::Verify($path);
                 $this->FileCheck($route->controller);
@@ -97,6 +96,6 @@ class Router
                 die();
             }
         }
-        echo "not found";
+        ErrorHandler::ThrowNew("Error 404 not found", "Page you looking for doesn't exists", 404);
     }   
 }

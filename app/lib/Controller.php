@@ -1,13 +1,38 @@
 <?php
 
-require_once "Loader.php";
-
-class Controller extends Loader
+class Controller
 {
 
     function __construct()
     {
-        $this->load_lib("Input");
+        $this->Input = new Input();
+    }
+
+    /**
+     * Created for extreme cases
+     */
+    public function load_all_models()
+    {
+        foreach (glob($_SERVER['DOCUMENT_ROOT'] ."/app/model/*.php") as $model)
+        {
+            require_once($model);
+            $model_name = basename($model, ".php");
+            $this->$model_name = new $model_name;
+        }
+    }
+
+    /**
+     * @param $model_name string model name to include / don't use .php
+     */
+    public function load_model($model_name)
+    {
+        if(file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php")) {
+            require_once $_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php";
+        } else {
+            echo "Model named : $model_name not found";
+            die;
+        }
+        $this->$model_name = new $model_name;
     }
 
     /**
