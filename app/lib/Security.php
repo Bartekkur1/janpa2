@@ -6,7 +6,7 @@ class Security extends Controller
 
     function __construct()
     {
-        // $this->load_model("UserModel");
+
     }
 
     /**

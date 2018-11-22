@@ -9,10 +9,6 @@
         }
 
         public function index() {
-            // echo "Hi, Im test controller. I like testing.";
-            $this->JsonResponse(array(
-                "name" => "test",
-                "surname" => "testimus"
-            ));
+            echo "Hi, Im test controller. I like testing.";
         }
     }

@@ -30,30 +30,30 @@
         }
 
 
-        /**
-         * Created for extreme cases
-         */
-        public function load_all_models()
-        {
-            foreach (glob($_SERVER['DOCUMENT_ROOT'] ."/app/model/*.php") as $model)
-            {
-                require_once($model);
-                $model_name = basename($model, ".php");
-                $this->$model_name = new $model_name;
-            }
-        }
+        // /**
+        //  * Created for extreme cases
+        //  */
+        // public function load_all_models()
+        // {
+        //     foreach (glob($_SERVER['DOCUMENT_ROOT'] ."/app/model/*.php") as $model)
+        //     {
+        //         require_once($model);
+        //         $model_name = basename($model, ".php");
+        //         $this->$model_name = new $model_name;
+        //     }
+        // }
 
-        /**
-         * @param $model_name string model name to include / don't use .php
-         */
-        public function load_model($model_name)
-        {   
-            if(file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php"))
-                require_once $_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php";
-            else
-                ErrorHandler::ThrowNew("Model not found!",
-                "Requested model '$model_name' could not be found " . debug_backtrace()[0]["file"] .
-                " at line " . debug_backtrace()[0]["line"] . "" , 400);            
-            $this->$model_name = new $model_name;
-        }
+        // /**
+        //  * @param $model_name string model name to include / don't use .php
+        //  */
+        // public function load_model($model_name)
+        // {   
+        //     if(file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php"))
+        //         require_once $_SERVER["DOCUMENT_ROOT"] . "/app/model/$model_name.php";
+        //     else
+        //         ErrorHandler::ThrowNew("Model not found!",
+        //         "Requested model '$model_name' could not be found " . debug_backtrace()[0]["file"] .
+        //         " at line " . debug_backtrace()[0]["line"] . "" , 400);            
+        //     $this->$model_name = new $model_name;
+        // }
     }

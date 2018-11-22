@@ -3,12 +3,12 @@
 class QueryBuilder
 {
 
-    public $query, $mysqli;
+    public $query, $mysqli, $config;
 
     function __construct()
     {
-        $config = parse_ini_file("app/config.ini");
-        $this->mysqli = new mysqli("localhost", $config["login"], $config["password"], $config["dbname"]);
+        $this->config = parse_ini_file("app/config.ini");
+        $this->mysqli = new mysqli("localhost", $this->config["login"], $this->config["password"], $this->config["dbname"]);
         if ($this->mysqli->connect_errno) {
             echo "Failed to connect to MySQL: (" . $this->mysqli->connect_errno . ") " . $this->mysqli->connect_error;
             die();
@@ -20,7 +20,7 @@ class QueryBuilder
     /**
      * returns injection clean array
      */
-    private function escape_array($inputs = array())
+    private function EscapeArray($inputs = array())
     {
         $clean_inputs = array();
         foreach($inputs as $name => $input) {
@@ -32,7 +32,7 @@ class QueryBuilder
     /**
      * executes object query
      */
-    public function execute()
+    public function Execute()
     {
         // echo $this->query . "</br>";
         $result = $this->mysqli->query($this->query);
@@ -51,7 +51,7 @@ class QueryBuilder
         }
     }
 
-    public function exists($table_name, $values = array())
+    public function Exists($table_name, $values = array())
     {
         $this->query .= "SELECT `id` FROM `$table_name` WHERE ";
         $valueIndx = 0;
@@ -67,9 +67,9 @@ class QueryBuilder
     /*
      * UPDATE `$table_name` SET '$key' = `$value`
      */
-    public function update($table_name, $values = array())
+    public function Update($table_name, $values = array())
     {
-        $values = $this->escape_array($values);
+        $values = $this->EscapeArray($values);
         $this->query .= "UPDATE `$table_name` SET ";
         $valueIndx = 0;
         foreach($values as $name => $value) {
@@ -84,9 +84,9 @@ class QueryBuilder
     /**
      * INSERT INTO $table_name ($params) VALUES ($values)
      */
-    public function insert($table_name, $values = array())
+    public function Insert($table_name, $values = array())
     {
-        $values = $this->escape_array($values);
+        $values = $this->EscapeArray($values);
         $this->query .= "INSERT INTO `$table_name` (";
         $paramIndx = 0;
         foreach($values as $name => $value) {
@@ -112,7 +112,7 @@ class QueryBuilder
      * ORDER BY `$row_name` $type
      * DESC or ASC
      */
-    public function order_by($row_name, $type)
+    public function OrderBy($row_name, $type)
     {
         $this->query .= "ORDER BY `$row_name` $type ";
     }
@@ -120,18 +120,27 @@ class QueryBuilder
     /**
      * SELECT COUNT(`id`) as `count` FROM `$table_name`
      */
-    public function count($table_name)
+    public function Count($table_name)
     {
         $this->query = "SELECT COUNT(`id`) as 'count' FROM `$table_name`";
+    }
+
+    public function ShowColumns($table_name) {
+        $columns = array();
+        $this->query = "SELECT column_name FROM information_schema.columns WHERE  table_name = '$table_name' AND table_schema = '" . $this->config["dbname"] . "'";
+        foreach($this->Execute() as $column) {
+            array_push($columns, $column->column_name);
+        }
+        return $columns;
     }
 
     /**
      * SELECT * FROM $table_name
      * SELECT $values FROM $table_name
      */
-    public function select($table_name, $values = array())
+    public function Select($table_name, $values = array())
     {
-        $values = $this->escape_array($values);
+        $values = $this->EscapeArray($values);
         $this->query .= "SELECT";
         if (!empty($values)) {
             $valuesIndx = 0;
@@ -152,9 +161,9 @@ class QueryBuilder
      * WHERE $key = $param AND ...
      * WHERE 1
      */
-    public function where($params = array())
+    public function Where($params = array())
     {
-        $params = $this->escape_array($params);
+        $params = $this->EscapeArray($params);
         $this->query .= " WHERE ";
         if (!empty($params)) {
             $paramIndx = 0;
@@ -173,7 +182,7 @@ class QueryBuilder
     /**
      * LIMIT $start, $amount
      */
-    public function limit($start, $amount)
+    public function Limit($start, $amount)
     {
         $this->query .= " LIMIT $start, $amount";
     }
@@ -181,7 +190,7 @@ class QueryBuilder
     /**
      * DELETE FROM $table_name
      */
-    public function delete($table_name)
+    public function Delete($table_name)
     {
         $this->query .= "DELETE FROM `$table_name` ";
     }

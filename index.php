@@ -12,7 +12,4 @@ $Security->Map("/admin");
 // App routing
 $Router = new Router($Security);
 $Router->Map("/", "TestController@index");
-$Router->Map("/admin/panel", "TestController@index");
-$Router->Map("/admin/kek", "TestController@index");
-$Router->Map("/login", "TestController@index");
 $Router->Start();

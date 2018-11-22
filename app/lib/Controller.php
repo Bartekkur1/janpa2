@@ -5,6 +5,9 @@ class Controller extends Loader
     function __construct()
     {
         $this->LoadLib("Input");
+        ORM::Setup();
+        $kek = ORM::Load("users", array());
+        var_dump($kek);
     }   
 
     /**
