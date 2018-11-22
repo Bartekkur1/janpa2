@@ -6,7 +6,7 @@ class Controller extends Loader
     {
         $this->LoadLib("Input");
         ORM::Setup();
-        $kek = ORM::Load("users", array());
+            $kek = ORM::Load("User", array());
         var_dump($kek);
     }   
 
