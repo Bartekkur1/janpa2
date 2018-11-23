@@ -30,17 +30,6 @@ class ORM {
     }
 
     /**
-     * Updates object from given object
-     * REMEMBER TO SET ID!!
-     * @param object $object
-     * @return bool success
-     */
-    static function Update($object)
-    {
-        
-    }
-
-    /**
      * TODO arguments implementation
      * Returns object founded in db / leave array empty to load all
      * @param string $table_name
@@ -103,8 +92,29 @@ class ORM {
     {
         $props = $object->GetProperties();
         $table_name = get_class($object) . "s";
-        self::$qb->Insert($table_name, $props);
+        if(self::$qb->Exists($table_name, array("id" => $object->GetId())))
+            self::$qb->Update($table_name, $props);
+        else
+            self::$qb->Insert($table_name, $props);
         self::$qb->Execute();   
         return self::$qb->InsertId();
+    }
+
+    /**
+     * Push models conained in array / made for multiple entity pushing
+     * @param array $objects array containing entity objects
+     * @return bool success
+     */
+    static function PushAll($objects = array()) {
+        $table_name = get_class($objects[0]);
+        foreach($objects as $object) {
+            $props = $object->GetProperties();
+            if(self::$qb->Exists($table_name, array("id" => $object->GetId())))
+                self::$qb->Update($table_name, $props);
+            else
+                self::$qb->Insert($table_name, $props);
+            self::$qb->Execute();   
+        }
+        return true;
     }
 }

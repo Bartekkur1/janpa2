@@ -4,11 +4,9 @@ class Controller extends Loader
 {
     function __construct()
     {
-        // testing ORM here
         $this->LoadLib("Input");
         ORM::Setup();
-        var_dump(ORM::Load("User", array(), array("OrderBy" => "id,DESC")));
-    }   
+    }
 
     /**
      * @param array $data array with data to parse intro json object
