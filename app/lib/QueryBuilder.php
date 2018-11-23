@@ -34,7 +34,6 @@ class QueryBuilder
      */
     public function Execute()
     {
-        // echo $this->query . "</br>";
         $result = $this->mysqli->query($this->query);
         $this->query = "";
         if(is_bool($result)) {
@@ -62,6 +61,7 @@ class QueryBuilder
                 $this->query .= " AND ";
             }
         }
+        return $this->Execute();
     }
 
     /*
@@ -79,6 +79,10 @@ class QueryBuilder
                 $this->query .= ", ";
             }
         }
+    }
+
+    public function InsertId() {
+        return $this->mysqli->insert_id;
     }
 
     /**

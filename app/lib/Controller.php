@@ -4,17 +4,21 @@ class Controller extends Loader
 {
     function __construct()
     {
+        // testing ORM here
         $this->LoadLib("Input");
         ORM::Setup();
-            $kek = ORM::Load("User", array());
-        var_dump($kek);
+        $kek = new User();
+        $kek->SetLogin("xd");
+        $kek->SetPassword("123");
+        ORM::Push($kek);
     }   
 
     /**
      * @param array $data array with data to parse intro json object
      * @param int $status http status code
      */
-    public function JsonResponse($data = array(), $status = 200) {
+    public function JsonResponse($data = array(), $status = 200) 
+    {
         http_response_code($status);
         echo json_encode($data);
     }
@@ -23,7 +27,8 @@ class Controller extends Loader
      * @param string $html_message html content to show on page
      * @param int $status http status code
      */
-    public function Response($html_message, $status = 200) {
+    public function Response($html_message, $status = 200) 
+    {
         http_response_code($status);
         echo $html_message;
     }
