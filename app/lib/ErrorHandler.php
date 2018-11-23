@@ -4,7 +4,9 @@ class ErrorHandler {
 
     /**
      * Renders standard janpa error page
-     * @param $message string eror message to show
+     * @param string $title error title
+     * @param string $message eror message to show
+     * @param string $status status code
      */
     public static function ThrowNew($title, $message, $status) {
         ob_end_clean();

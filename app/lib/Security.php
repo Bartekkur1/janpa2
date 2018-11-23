@@ -4,14 +4,8 @@ class Security extends Controller
 {
     private $secured_paths = array();
 
-    function __construct()
-    {
-
-    }
-
     /**
-     * @param $path string url path to link
-     * @return void added path to secured list
+     * @param string $path string url path to link
      */
     public function Map($path)
     {
@@ -29,11 +23,13 @@ class Security extends Controller
      */
     private function Authenticate()
     {
-        return isset($_SESSION["xd"]) && $_SESSION["xd"] == "xd";
+        return isset($_SESSION["key"]) && $_SESSION["key"] == "123";
     }
 
     /**
-     * @param $path string url path
+     * Verifies that user have permision to access path 
+     * @param string $path string url path
+     * @return bool 
      */
     public function Verify($path)
     {
@@ -41,11 +37,14 @@ class Security extends Controller
             if(count(array_diff_assoc($secured_path, $path)) == 0) {
                 if(!self::Authenticate())
                     ErrorHandler::ThrowNew("Permision denied", "You don't have permision to view this ", 401);
+                else
+                    return true;
             }
         }
     }
 
     /**
+     * Function to secure your password - opened for change
      * @param string $password
      * @return string $hashed_password
      */

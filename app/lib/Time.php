@@ -20,7 +20,8 @@ class Time
     }
 
     /**
-     * @return string
+     * time now H:i:s
+     * @return string 
      */
     public function get_time()
     {
@@ -28,6 +29,7 @@ class Time
     }
 
     /**
+     * time now Y-m-d H:i:s
      * @return string
      */
     public function get_datetime()

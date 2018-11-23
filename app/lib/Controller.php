@@ -5,7 +5,16 @@ class Controller extends Loader
     function __construct()
     {
         $this->LoadLib("Input");
-        ORM::Setup();
+        // ORM::Setup();
+        $this->GetHeader("Connection");
+    }
+
+    /**
+     * @param string $name of the header
+     * @return string header value
+     */
+    public function GetHeader($name) {
+        return apache_request_headers()[$name];
     }
 
     /**

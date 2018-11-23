@@ -2,8 +2,6 @@
 
     class TestController extends Controller {
 
-        private $model;
-
         function __construct() {
             parent::__construct();
         }

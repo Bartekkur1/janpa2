@@ -33,7 +33,7 @@ class Router
 
     /**
      * @param $controller controller name to check if exists
-     * @return stdClass exists or nah
+     * @return object exists or nah
      */
     private function ControllerCheck($controller)
     {
@@ -58,7 +58,7 @@ class Router
     }
 
     /**
-     * @param stdClass $controllerObject php class object
+     * @param object $controllerObject php class object
      * @param string $function function name
      * @return bool class contains function or nah
      */

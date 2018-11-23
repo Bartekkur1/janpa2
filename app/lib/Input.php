@@ -6,7 +6,7 @@ class Input
     /**
      * Function to get $_POST input
      * @param string $name post input name
-     * @return var input
+     * @return mixed input
      */
     public function Post($name = null)
     {
@@ -24,7 +24,7 @@ class Input
     /**
      * Function to get $_GET input
      * @param string $name get input name
-     * @return var input from get
+     * @return mixed input from get
      */
     public function Get($name = null)
     {
@@ -42,7 +42,7 @@ class Input
     /**
      * Function to get $_FILE input
      * @param string $name
-     * @return file file object
+     * @return resource file object
      */
     public function File($name = null)
     {

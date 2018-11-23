@@ -5,6 +5,9 @@ class QueryBuilder
 
     public $query, $mysqli, $config;
 
+    /**
+     * Mysql connection
+     */
     function __construct()
     {
         $this->config = parse_ini_file("app/config.ini");
@@ -18,7 +21,9 @@ class QueryBuilder
     }
     
     /**
-     * returns injection clean array
+     * Returns injection clean array
+     * @param array $inputs
+     * @return array $clean_inputs db safe
      */
     private function EscapeArray($inputs = array())
     {
@@ -30,7 +35,8 @@ class QueryBuilder
     }
 
     /**
-     * executes object query
+     * Executes object query
+     * @return mixed $result from query
      */
     public function Execute()
     {
@@ -50,6 +56,11 @@ class QueryBuilder
         }
     }
 
+    /**
+     * Checks if record exists in db
+     * @param string $table_name
+     * @param array $values from where object is selected
+     */
     public function Exists($table_name, $values = array())
     {
         $this->query .= "SELECT `id` FROM `$table_name` WHERE ";
@@ -64,8 +75,11 @@ class QueryBuilder
         return $this->Execute();
     }
 
-    /*
+    /**
      * UPDATE `$table_name` SET '$key' = `$value`
+     * Array structure is important here - array keys should be row names
+     * @param string $table_name
+     * @param array $values to update 
      */
     public function Update($table_name, $values = array())
     {
@@ -81,12 +95,18 @@ class QueryBuilder
         }
     }
 
+    /**
+     * @return int $InsertId from last insert query
+     */
     public function InsertId() {
         return $this->mysqli->insert_id;
     }
 
     /**
      * INSERT INTO $table_name ($params) VALUES ($values)
+     * Array structure is important here - array keys should be row names
+     * @param string $table_name
+     * @param array $values to insert
      */
     public function Insert($table_name, $values = array())
     {
@@ -113,8 +133,9 @@ class QueryBuilder
     }
 
     /**
-     * ORDER BY `$row_name` $type
-     * DESC or ASC
+     * ORDER BY `$row_name` $type  -  DESC or ASC
+     * @param string $row_name to order
+     * @param string $type in which order should be
      */
     public function OrderBy($row_name, $type)
     {
@@ -123,12 +144,20 @@ class QueryBuilder
 
     /**
      * SELECT COUNT(`id`) as `count` FROM `$table_name`
+     * @param string $table_name
+     * @return int number of rows found
      */
     public function Count($table_name)
     {
         $this->query = "SELECT COUNT(`id`) as 'count' FROM `$table_name`";
+        return $this->Execute();
     }
 
+    /**
+     * Function made for ORM - returns table column names
+     * @param string $table_name
+     * @return array $columns
+     */
     public function ShowColumns($table_name) {
         $columns = array();
         $this->query = "SELECT column_name FROM information_schema.columns WHERE  table_name = '$table_name' AND table_schema = '" . $this->config["dbname"] . "'";
@@ -139,8 +168,10 @@ class QueryBuilder
     }
 
     /**
-     * SELECT * FROM $table_name
-     * SELECT $values FROM $table_name
+     * If values empty - SELECT * FROM $table_name
+     * else SELECT $values FROM $table_name
+     * @param string $table_name
+     * @param array $values
      */
     public function Select($table_name, $values = array())
     {
@@ -162,8 +193,9 @@ class QueryBuilder
     }
 
     /**
+     * If params empty - WHERE 1
      * WHERE $key = $param AND ...
-     * WHERE 1
+     * @param array $params
      */
     public function Where($params = array())
     {
@@ -185,6 +217,8 @@ class QueryBuilder
 
     /**
      * LIMIT $start, $amount
+     * @param int $start
+     * @param int @amount
      */
     public function Limit($start, $amount)
     {
@@ -193,6 +227,7 @@ class QueryBuilder
 
     /**
      * DELETE FROM $table_name
+     * @param string $table_name
      */
     public function Delete($table_name)
     {

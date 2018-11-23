@@ -2,7 +2,9 @@
 
 class Model
 {
-    
+    /**
+     * @return array $props containg
+     */
     public function GetProperties() {
         $props = array();
         foreach ($this as $key => $value) {
