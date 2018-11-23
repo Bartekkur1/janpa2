@@ -7,6 +7,7 @@ class ErrorHandler {
      * @param $message string eror message to show
      */
     public static function ThrowNew($title, $message, $status) {
+        ob_end_clean();
         http_response_code($status);
         extract(array(
             "title" => $title,

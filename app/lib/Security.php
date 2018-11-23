@@ -44,4 +44,12 @@ class Security extends Controller
             }
         }
     }
+
+    /**
+     * @param string $password
+     * @return string $hashed_password
+     */
+    public static function Password($password) {
+        return password_hash($password, PASSWORD_BCRYPT);
+    }
 }

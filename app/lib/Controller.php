@@ -7,10 +7,7 @@ class Controller extends Loader
         // testing ORM here
         $this->LoadLib("Input");
         ORM::Setup();
-        $kek = new User();
-        $kek->SetLogin("xd");
-        $kek->SetPassword("123");
-        ORM::Push($kek);
+        var_dump(ORM::Load("User", array(), array("OrderBy" => "id,DESC")));
     }   
 
     /**

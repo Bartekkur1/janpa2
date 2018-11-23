@@ -8,10 +8,10 @@ class QueryBuilder
     function __construct()
     {
         $this->config = parse_ini_file("app/config.ini");
-        $this->mysqli = new mysqli("localhost", $this->config["login"], $this->config["password"], $this->config["dbname"]);
+        if(!$this->mysqli = new mysqli("localhost", $this->config["login"], $this->config["password"], $this->config["dbname"]))
+            die("xd");
         if ($this->mysqli->connect_errno) {
-            echo "Failed to connect to MySQL: (" . $this->mysqli->connect_errno . ") " . $this->mysqli->connect_error;
-            die();
+            ErrorHandler::ThrowNew("Database problem!", $this->mysqli->connect_error , 500);
         }
         $this->mysqli->set_charset('utf8');
         $this->connected = true;
@@ -118,7 +118,7 @@ class QueryBuilder
      */
     public function OrderBy($row_name, $type)
     {
-        $this->query .= "ORDER BY `$row_name` $type ";
+        $this->query .= " ORDER BY `$row_name` $type ";
     }
 
     /**
