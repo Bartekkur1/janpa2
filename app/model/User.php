@@ -1,5 +1,8 @@
 <?php
 
+namespace Janpa\App\Model;
+use Janpa\App\Lib\Model as Model;
+
 class User extends Model {
     protected $id;
     protected $login;

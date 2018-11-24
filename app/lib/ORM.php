@@ -1,5 +1,7 @@
 <?php
 
+namespace Janpa\App\Lib;
+
 class ORM {
 
     private static $qb;
@@ -40,6 +42,7 @@ class ORM {
     static function Load($model, array $params = array(), array $arguments = array()) 
     {
         $table_name = $model . "s";
+        $model = "Janpa\\App\\Model\\" . $model;
         $columns = self::$qb->ShowColumns($table_name);
         self::$qb->Select($table_name, $columns);
         self::$qb->Where($params);
@@ -91,7 +94,8 @@ class ORM {
     static function Push($object) 
     {
         $props = $object->GetProperties();
-        $table_name = get_class($object) . "s";
+        $table_name = explode("\\", get_class($object));
+        $table_name = end($table_name) . "s";
         if(self::$qb->Exists($table_name, array("id" => $object->GetId())))
             self::$qb->Update($table_name, $props);
         else
@@ -106,7 +110,8 @@ class ORM {
      * @return bool success
      */
     static function PushAll($objects = array()) {
-        $table_name = get_class($objects[0]);
+        $table_name = explode("\\", get_class($objects[0]));
+        $table_name = end($table_name) . "s";
         foreach($objects as $object) {
             $props = $object->GetProperties();
             if(self::$qb->Exists($table_name, array("id" => $object->GetId())))

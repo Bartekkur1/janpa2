@@ -1,5 +1,8 @@
 <?php
 
+namespace Janpa\App\Lib;
+use Mysqli;
+
 class QueryBuilder
 {
 
@@ -11,8 +14,7 @@ class QueryBuilder
     function __construct()
     {
         $this->config = parse_ini_file("app/config.ini");
-        if(!$this->mysqli = new mysqli("localhost", $this->config["login"], $this->config["password"], $this->config["dbname"]))
-            die("xd");
+        $this->mysqli = new mysqli("localhost", $this->config["login"], $this->config["password"], $this->config["dbname"]);
         if ($this->mysqli->connect_errno) {
             ErrorHandler::ThrowNew("Database problem!", $this->mysqli->connect_error , 500);
         }

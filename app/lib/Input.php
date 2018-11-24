@@ -1,5 +1,7 @@
 <?php
 
+namespace Janpa\App\Lib;
+
 class Input
 {
 

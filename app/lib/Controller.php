@@ -1,12 +1,16 @@
 <?php
 
+namespace Janpa\App\Lib;
+use Janpa\App\Lib\Loader as Loader;
+use Janpa\App\Model\User as User;
+
 class Controller extends Loader
 {
     function __construct()
     {
         $this->LoadLib("Input");
-        // ORM::Setup();
-        $this->GetHeader("Connection");
+        ORM::Setup();
+        var_dump(ORM::Delete("User", array("id" => 2)));
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+namespace Janpa\App\Lib;
+
 class Route
 {
     public $path, $controller, $function, $params;

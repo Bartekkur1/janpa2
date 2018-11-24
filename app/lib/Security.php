@@ -1,6 +1,8 @@
 <?php
 
-class Security extends Controller
+namespace Janpa\App\Lib;
+
+class Security
 {
     private $secured_paths = array();
 
