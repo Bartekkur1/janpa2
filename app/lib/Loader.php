@@ -19,6 +19,18 @@ class Loader {
     }
     
     /**
+     * @param $name string to controller path
+     * @return bool exists or nah
+     */
+    public static function LoadController($name) {
+        if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php"))
+            ErrorHandler::ThrowNew("File not found!",
+            "Requested file '$file' could not be found " . debug_backtrace()[0]["file"] .
+            " at line " . debug_backtrace()[0]["line"] . "" , 400);     
+        return include_once $_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php";
+    }
+
+    /**
      * Loads library to object instance
      * @param $lib_name string library name to include / don't use .php
      */

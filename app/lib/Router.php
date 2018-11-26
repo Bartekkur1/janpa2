@@ -47,19 +47,6 @@ class Router
     }
 
     /**
-     * @param $name string path to controller file
-     * @return bool exists or nah
-     */
-    private function FileCheck($name)
-    {
-        if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php"))
-            ErrorHandler::ThrowNew("File not found!",
-            "Requested file '$file' could not be found " . debug_backtrace()[0]["file"] .
-            " at line " . debug_backtrace()[0]["line"] . "" , 400);     
-        return include_once $_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php";
-    }
-
-    /**
      * @param object $controllerObject php class object
      * @param string $function function name
      * @return bool class contains function or nah
@@ -105,7 +92,7 @@ class Router
             }
             if(count(array_diff_assoc($path, $route->path)) == 0 && count($path) > 0) {
                 isset($this->Security) ? $this->Security->Verify($path) : "";
-                $this->FileCheck($route->controller);
+                Loader::LoadController($route->controller);
                 $controllerObject = $this->ControllerCheck($route->controller);
                 $this->FunctionCheck($controllerObject, $route->function);
                 call_user_func_array(array($controllerObject, $route->function), array_diff($path, $route->path));

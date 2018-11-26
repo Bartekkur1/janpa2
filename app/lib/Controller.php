@@ -10,7 +10,6 @@ class Controller extends Loader
     {
         $this->LoadLib("Input");
         ORM::Setup();
-        var_dump(ORM::Delete("User", array("id" => 2)));
     }
 
     /**
