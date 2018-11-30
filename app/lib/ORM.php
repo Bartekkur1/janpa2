@@ -96,8 +96,12 @@ class ORM {
         $props = $object->GetProperties();
         $table_name = explode("\\", get_class($object));
         $table_name = end($table_name) . "s";
-        if(self::$qb->Exists($table_name, array("id" => $object->GetId())))
+        if(isset($props["id"])) 
+            unset($props["id"]);
+        if(self::$qb->Exists($table_name, array("id" => $object->GetId()))) {
             self::$qb->Update($table_name, $props);
+            self::$qb->Where(array("id" => $object->GetId()));
+        }
         else
             self::$qb->Insert($table_name, $props);
         self::$qb->Execute();   

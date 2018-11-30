@@ -85,18 +85,22 @@ class Router
      */
     public function Start()
     {
-        $path = isset($_GET["path"]) ? preg_split('/\//', $_GET["path"], 0, PREG_SPLIT_NO_EMPTY) : array("/");
         foreach($this->routes as $route) {
+            $path = isset($_GET["path"]) ? preg_split('/\//', $_GET["path"], 0, PREG_SPLIT_NO_EMPTY) : array("/");
+            $original_path = $path;
+            $params = array_diff_assoc($path, $route->path);
             foreach($route->params as $param) {
                 array_pop($path);
             }
             if(count(array_diff_assoc($path, $route->path)) == 0 && count($path) > 0) {
-                isset($this->Security) ? $this->Security->Verify($path) : "";
-                Loader::LoadController($route->controller);
-                $controllerObject = $this->ControllerCheck($route->controller);
-                $this->FunctionCheck($controllerObject, $route->function);
-                call_user_func_array(array($controllerObject, $route->function), array_diff($path, $route->path));
-                die();
+                if(count($params) == count($route->params)) {
+                    isset($this->Security) ? $this->Security->Verify($path) : "";
+                    Loader::LoadController($route->controller);
+                    $controllerObject = $this->ControllerCheck($route->controller);
+                    $this->FunctionCheck($controllerObject, $route->function);
+                    call_user_func_array(array($controllerObject, $route->function), $params);
+                    die();
+                }
             }
         }
         ErrorHandler::ThrowNew("Error 404 not found", "Page you looking for doesn't exists", 404);

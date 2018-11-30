@@ -1,15 +1,46 @@
 <?php
 
 namespace Janpa\App\Lib;
-use Janpa\App\Lib\Loader as Loader;
-use Janpa\App\Model\User as User;
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'app/Lib/PhpMailer/Exception.php';
+require 'app/Lib/PhpMailer/PHPMailer.php';
+require 'app/Lib/PhpMailer/SMTP.php';
 
 class Controller extends Loader
 {
+    public $error_msg, $success_msg;
+
     function __construct()
     {
         $this->LoadLib("Input");
+        $this->LoadLib("Security");
         ORM::Setup();
+    }
+
+    public function Redirect($path, $delay = 0) {
+        sleep($delay);
+        header("Location: $path");
+        die();
+    }
+
+    public function PhpMailerSetup() {
+        $config = parse_ini_file("app/config.ini");
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();                                     
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = $config["email"];
+        $mail->Password = $config["email_password"];                           
+        $mail->SMTPSecure = 'tls';                            
+        $mail->Port = 587;                                    
+        $mail->SMTPDebug = false;
+        $mail->CharSet = "UTF-8";
+        $mail->setFrom('tebexam.noreply@gmail.com', 'TebExam');
+        $mail->isHTML(true);
+        return $mail;        
     }
 
     /**
@@ -27,7 +58,7 @@ class Controller extends Loader
     public function JsonResponse($data = array(), $status = 200) 
     {
         http_response_code($status);
-        echo json_encode($data);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -45,9 +76,9 @@ class Controller extends Loader
      * @param string $file view file name
      * @param array $variables array with data
      */
-    public function Render($file, $variables = array(), $status)
+    public function Render($file, $variables = array(), $status = 200)
     {
-        if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/templates/" . $file . ".php")) {
+        if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/view/" . $file . ".php")) {
             ob_end_clean();
             ErrorHandler::ThrowNew("Template not found!",
             "Requested template '$file' could not be found " . debug_backtrace()[0]["file"] .
@@ -56,7 +87,7 @@ class Controller extends Loader
             http_response_code($status);
             extract($variables);
             ob_start();
-            require $_SERVER["DOCUMENT_ROOT"] . "/app/templates/" . $file . ".php";
+            require $_SERVER["DOCUMENT_ROOT"] . "/app/view/" . $file . ".php";
             $render_view = ob_get_clean();
             echo $render_view;
         }

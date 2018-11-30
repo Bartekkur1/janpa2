@@ -9,14 +9,14 @@ class Time
     function __construct()
     {
         date_default_timezone_set("Europe/Warsaw");
-        $this->date_time = new DateTime();
+        $this->date_time = new \DateTime();
     }
 
     /**
      * @param string $order "Y-m-d"
      * @return string returns date in given order
      */
-    public function get_date($order = "Y-m-d")
+    public function GetDate($order = "Y-m-d")
     {
         return $this->date_time->format($order);
     }
@@ -25,7 +25,7 @@ class Time
      * time now H:i:s
      * @return string 
      */
-    public function get_time()
+    public function GetTime()
     {
         return $this->date_time->format("H:i:s");
     }
@@ -34,7 +34,7 @@ class Time
      * time now Y-m-d H:i:s
      * @return string
      */
-    public function get_datetime()
+    public function GetDateTime()
     {
         return $this->date_time->format("Y-m-d H:i:s");
     }

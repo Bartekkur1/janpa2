@@ -11,7 +11,7 @@ class ErrorHandler {
      * @param string $status status code
      */
     public static function ThrowNew($title, $message, $status) {
-        ob_end_clean();
+        // ob_end_clean();
         http_response_code($status);
         extract(array(
             "title" => $title,

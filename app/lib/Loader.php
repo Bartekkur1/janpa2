@@ -17,7 +17,27 @@ class Loader {
             " at line " . debug_backtrace()[0]["line"] . "" , 400);   
         }
     }
-    
+
+    /**
+     * auto include class to website
+     * @param string $class_name to include
+     */
+    public static function ClassAutoload() {
+        spl_autoload_register(function ($class_name) {
+            $class_name = explode("\\", $class_name);
+            if(file_exists("app/lib/" . end($class_name) . ".php"))
+                require_once "app/lib/" . end($class_name) . ".php";
+            else if(file_exists("app/model/" . end($class_name) . ".php"))
+                require_once "app/model/" . end($class_name) . ".php";
+            else if(file_exists("app/controllers/" . end($class_name) . ".php"))
+                require_once "app/controllers/" . end($class_name) . ".php";
+            else
+                ErrorHandler::ThrowNew("Class not found!",
+                "Requested class '" .end($class_name). "' could not be found " . debug_backtrace()[1]["file"] .
+                " at line " . debug_backtrace()[1]["line"] . "" , 400);     
+        });
+    }
+
     /**
      * @param $name string to controller path
      * @return bool exists or nah
@@ -25,7 +45,7 @@ class Loader {
     public static function LoadController($name) {
         if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php"))
             ErrorHandler::ThrowNew("File not found!",
-            "Requested file '$file' could not be found " . debug_backtrace()[0]["file"] .
+            "Requested file '$name' could not be found " . debug_backtrace()[0]["file"] .
             " at line " . debug_backtrace()[0]["line"] . "" , 400);     
         return include_once $_SERVER["DOCUMENT_ROOT"] . "/app/controllers/$name.php";
     }

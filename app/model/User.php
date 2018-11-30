@@ -7,6 +7,8 @@ class User extends Model {
     protected $id;
     protected $login;
     protected $password;
+    protected $email;
+    protected $role;
 
     public function SetId($id) {
         $this->id = $id;
@@ -30,5 +32,21 @@ class User extends Model {
 
     public function GetPassword() {
         return $this->password;
+    }
+
+    public function GetEmail() {
+        return $this->email;
+    }
+
+    public function SetEmail($email) {
+        $this->email = $email;
+    }
+
+    public function GetRole() {
+        return $this->role;
+    }
+
+    public function SetRole($role) {
+        $this->role = $role;
     }
 }
