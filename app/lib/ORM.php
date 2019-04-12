@@ -42,6 +42,7 @@ class ORM {
      * @param array $params where to select
      * @param array $arguments like: Limit => 0,5 OR OrderBy => row_name,ASC
      * @return object||array returns object or objects from db
+     * Load("User", ['login' => 'admin'], ['Limit' => '0,1'])
      */
     public function Load($model, array $params = array(), array $arguments = array()) 
     {
@@ -60,13 +61,7 @@ class ORM {
         if(count($values) == 1) {
             foreach ($values[0] as $column => $value) {
                 $function_name = "Set" . ucfirst($column);
-                if(method_exists($object, $function_name))
                     call_user_func(array($object, $function_name), $value);
-                else {
-                    ErrorHandler::error("Model function error!",
-                    "Requested model '" . get_class($object) . "' doesn't have prop function '$function_name'
-                    in " . $_SERVER["DOCUMENT_ROOT"] . "/app/model/" . get_class($object) . ".php" , 400);
-                }
             }
             return $object;
         } else {
@@ -75,13 +70,7 @@ class ORM {
                 $object = new $model;
                 foreach ($fetched_object as $column => $value) {
                     $function_name = "Set" . ucfirst($column);
-                    if(method_exists($object, $function_name))
                         call_user_func(array($object, $function_name), $value);
-                    else {
-                        ErrorHandler::error("Model function error!",
-                        "Requested model '" . get_class($object) . "' doesn't have prop function '$function_name'
-                        in " . $_SERVER["DOCUMENT_ROOT"] . "/app/model/" . get_class($object) . ".php" , 400);
-                    }
                 }
                 array_push($objects, $object);
             }
@@ -92,23 +81,32 @@ class ORM {
     /**
      * Push model instance to database
      * @param object $object class instance to push
-     * @return int insert id
+     * @return int insert id or bool if updates object
      */
     public function Push($object) 
     {
-        $props = $object->GetProperties();
-        $table_name = explode("\\", get_class($object));
-        $table_name = end($table_name) . "s";
-        if(isset($props["id"])) 
-            unset($props["id"]);
-        if($this->qb->Exists($table_name, array("id" => $object->GetId()))) {
-            $this->qb->Update($table_name, $props);
-            $this->qb->Where(array("id" => $object->GetId()));
+        $props = $this->qb->ShowColumns($object->table_name);
+        $values = array();
+        foreach($props as $prop)
+        {
+            $function_name = "Get" . ucfirst($prop);
+            if(method_exists($object, $function_name))
+                $values[$prop] = call_user_func(array($object, $function_name));
+        }
+        if($this->qb->Exists($object->table_name, array("id" => $object->GetId()))) {
+            $id = $object->GetId();
+            unset($values["id"]);
+            $this->qb->Update($object->table_name, $values);
+            $this->qb->Where(array("id" => $id));
+            return $this->qb->Execute();
         }
         else
-            $this->qb->Insert($table_name, $props);
-        $this->qb->Execute();   
-        return $this->qb->InsertId();
+        {
+            unset($values["id"]);
+            $this->qb->Insert($object->table_name, $values);
+            $res = $this->qb->Execute();
+            return $this->qb->InsertId();
+        }
     }
 
     /**

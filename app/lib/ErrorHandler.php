@@ -11,7 +11,7 @@ class ErrorHandler {
      * @param string $status status code
      */
     public static function error($errno, $errstr, $errfile = null, $errline = null) {
-        // ob_end_clean();
+        ob_end_clean();
         http_response_code(500);
             
         extract(array(

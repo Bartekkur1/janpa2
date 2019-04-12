@@ -21,4 +21,14 @@ class UserRepository extends Repository {
         return $this->toModel($result[0], $this->object);
     }
 
+    public function LoginTaken($login)
+    {
+        return $this->qb->Exists("Users", ["login" => $login]);
+    }
+
+    public function EmailTaken($email)
+    {
+        return $this->qb->Exists("Users", ["email" => $email]);
+    }
+
 }

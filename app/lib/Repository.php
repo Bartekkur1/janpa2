@@ -19,8 +19,7 @@ class Repository {
         foreach($this->columns as $column)
         {
             $function_name = "Set" . ucfirst($column);
-            if(method_exists($object, $function_name))
-                call_user_func(array($object, $function_name), $result->$column);
+            call_user_func(array($object, $function_name), $result->$column);
         }
         return $object;
     }

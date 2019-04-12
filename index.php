@@ -24,5 +24,6 @@ $Router->Map("/", "DefaultController@Index");
 $Router->Map("/login", "DefaultController@Login");
 $Router->Map("/admin", "DefaultController@RoleCheck");
 $Router->Map("/logout", "DefaultController@Logout");
+$Router->Map("/register", "DefaultController@Register");
 
 $Router->Start();
