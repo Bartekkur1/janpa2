@@ -9,6 +9,10 @@ use Janpa\App\Lib\Router as Router;
 use Janpa\App\Lib\ErrorHandler as ErrorHandler;
 
 Loader::ClassAutoload();
+error_reporting(0);
+set_exception_handler(array("Janpa\App\Lib\ErrorHandler", "exception"));
+set_error_handler(array("Janpa\App\Lib\ErrorHandler", "error"));
+// register_shutdown_function(array("Janpa\App\Lib\ErrorHandler", "fatalError"));
 
 // Security info
 $Security = new Security();
@@ -18,7 +22,7 @@ $Security->Map("/admin", "ROLE_ADMIN");
 $Router = new Router($Security);
 $Router->Map("/", "DefaultController@Index");
 $Router->Map("/login", "DefaultController@Login");
-$Router->Map("/admin", "DefaultController@Index");
+$Router->Map("/admin", "DefaultController@RoleCheck");
 $Router->Map("/logout", "DefaultController@Logout");
 
 $Router->Start();

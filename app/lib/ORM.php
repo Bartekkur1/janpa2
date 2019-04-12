@@ -4,28 +4,32 @@ namespace Janpa\App\Lib;
 
 class ORM {
 
-    private static $qb;
+    private $qb;
 
     /**
      * Seting up database connection on query builder
      */
-    static function Setup()
-    {
-        self::$qb = new QueryBuilder();
-    }
+    // function Setup()
+    // {
+    //     $this->qb = new QueryBuilder();
+    // }
     
+    function __construct() {
+        $this->qb = new QueryBuilder();
+    }
+
     /**
      * @param string $table_name 
      * @param array $params where to delete
      * @return bool success
      */
-    static function Delete($table_name, array $params) 
+    public function Delete($table_name, array $params) 
     {
         $table_name .= "s";
-        if(self::$qb->Exists($table_name, $params)) {
-            self::$qb->Delete($table_name);
-            self::$qb->Where($params);
-            return self::$qb->Execute() ? true : false;    
+        if($this->qb->Exists($table_name, $params)) {
+            $this->qb->Delete($table_name);
+            $this->qb->Where($params);
+            return $this->qb->Execute() ? true : false;    
         } else {
             return false;
         }
@@ -39,28 +43,27 @@ class ORM {
      * @param array $arguments like: Limit => 0,5 OR OrderBy => row_name,ASC
      * @return object||array returns object or objects from db
      */
-    static function Load($model, array $params = array(), array $arguments = array()) 
+    public function Load($model, array $params = array(), array $arguments = array()) 
     {
-        $table_name = $model . "s";
         $model = "Janpa\\App\\Model\\" . $model;
-        $columns = self::$qb->ShowColumns($table_name);
-        self::$qb->Select($table_name, $columns);
-        self::$qb->Where($params);
+        $object = new $model;
+        $columns = $this->qb->ShowColumns($object->table_name);
+        $this->qb->Select($object->table_name, $columns);
+        $this->qb->Where($params);
         foreach($arguments as $argument => $value) {
             if($argument == "Limit") 
-                self::$qb->Limit(explode(",", $value)[0], explode(",", $value)[1]);
+                $this->qb->Limit(explode(",", $value)[0], explode(",", $value)[1]);
             else if($argument == "OrderBy") 
-                self::$qb->OrderBy(explode(",", $value)[0], explode(",", $value)[1]);
+                $this->qb->OrderBy(explode(",", $value)[0], explode(",", $value)[1]);
         }
-        $values = self::$qb->Execute();
+        $values = $this->qb->Execute();
         if(count($values) == 1) {
-            $object = new $model;
             foreach ($values[0] as $column => $value) {
                 $function_name = "Set" . ucfirst($column);
                 if(method_exists($object, $function_name))
                     call_user_func(array($object, $function_name), $value);
                 else {
-                    ErrorHandler::ThrowNew("Model function error!",
+                    ErrorHandler::error("Model function error!",
                     "Requested model '" . get_class($object) . "' doesn't have prop function '$function_name'
                     in " . $_SERVER["DOCUMENT_ROOT"] . "/app/model/" . get_class($object) . ".php" , 400);
                 }
@@ -75,7 +78,7 @@ class ORM {
                     if(method_exists($object, $function_name))
                         call_user_func(array($object, $function_name), $value);
                     else {
-                        ErrorHandler::ThrowNew("Model function error!",
+                        ErrorHandler::error("Model function error!",
                         "Requested model '" . get_class($object) . "' doesn't have prop function '$function_name'
                         in " . $_SERVER["DOCUMENT_ROOT"] . "/app/model/" . get_class($object) . ".php" , 400);
                     }
@@ -91,21 +94,21 @@ class ORM {
      * @param object $object class instance to push
      * @return int insert id
      */
-    static function Push($object) 
+    public function Push($object) 
     {
         $props = $object->GetProperties();
         $table_name = explode("\\", get_class($object));
         $table_name = end($table_name) . "s";
         if(isset($props["id"])) 
             unset($props["id"]);
-        if(self::$qb->Exists($table_name, array("id" => $object->GetId()))) {
-            self::$qb->Update($table_name, $props);
-            self::$qb->Where(array("id" => $object->GetId()));
+        if($this->qb->Exists($table_name, array("id" => $object->GetId()))) {
+            $this->qb->Update($table_name, $props);
+            $this->qb->Where(array("id" => $object->GetId()));
         }
         else
-            self::$qb->Insert($table_name, $props);
-        self::$qb->Execute();   
-        return self::$qb->InsertId();
+            $this->qb->Insert($table_name, $props);
+        $this->qb->Execute();   
+        return $this->qb->InsertId();
     }
 
     /**
@@ -113,16 +116,17 @@ class ORM {
      * @param array $objects array containing entity objects
      * @return bool success
      */
-    static function PushAll($objects = array()) {
+    public function PushAll($objects = array()) 
+    {
         $table_name = explode("\\", get_class($objects[0]));
         $table_name = end($table_name) . "s";
         foreach($objects as $object) {
             $props = $object->GetProperties();
-            if(self::$qb->Exists($table_name, array("id" => $object->GetId())))
-                self::$qb->Update($table_name, $props);
+            if($this->qb->Exists($table_name, array("id" => $object->GetId())))
+                $this->qb->Update($table_name, $props);
             else
-                self::$qb->Insert($table_name, $props);
-            self::$qb->Execute();   
+                $this->qb->Insert($table_name, $props);
+            $this->qb->Execute();   
         }
         return true;
     }

@@ -40,9 +40,7 @@ class Router
     private function ControllerCheck($controller)
     {
         if (!class_exists($controller))
-            ErrorHandler::ThrowNew("Controller not found!",
-            "Requested controller '$controller' could not be found " . debug_backtrace()[0]["file"] .
-            " at line " . debug_backtrace()[0]["line"] . "" , 400);        
+            throw new \Exception("Controller $controller not found");
         return new $controller;
     }
 
@@ -54,8 +52,9 @@ class Router
     private function FunctionCheck($controllerObject, $function)
     {
         if (!method_exists($controllerObject, $function))
-            ErrorHandler::ThrowNew("Controller function not found!",
-            get_class($controllerObject) . " does not contain method called '$function' check your routing", 400);     
+            throw new \Exception();
+            // ErrorHandler::error("Controller function not found!",
+            // get_class($controllerObject) . " does not contain method called '$function' check your routing", 400);     
         return true;
     }
 
@@ -103,6 +102,6 @@ class Router
                 }
             }
         }
-        ErrorHandler::ThrowNew("Error 404 not found", "Page you looking for doesn't exists", 404);
+        throw new \Exception("Error 404, page not found");
     }   
 }

@@ -5,7 +5,12 @@ use Janpa\App\Model\User as User;
 
 class Security
 {
-    private $secured_paths = array(), $roles = array();
+    private $secured_paths = array(), $roles = array(), $qb;
+
+    function __construct() 
+    {
+        $this->orm = new ORM();
+    }
 
     /**
      * @param string $path string url path to link
@@ -22,8 +27,9 @@ class Security
      * @param string $login
      * @param string $password (hashed)
      */
-    public function Authorize($login, $password) {
-        $User = ORM::Load("User", array("login" => $login));
+    public function Authorize($login, $password) 
+    {
+        $User = $this->orm->Load("user", array("login" => $login));
         if($User && password_verify($password, $User->GetPassword())) {
             $_SESSION["user"] = serialize($User);
             return true;
@@ -31,7 +37,9 @@ class Security
             return false;
     }
 
-    public function Unauthenticate() {
+    #simple logout
+    public function Unauthenticate() 
+    {
         $_SESSION["user"] = null;
         header("Location: /login");
     }
@@ -42,6 +50,8 @@ class Security
      */
     public function Authenticate($role)
     {
+        if(empty($_SESSION["user"]))
+            return false;
         $User = unserialize($_SESSION["user"]);
         if(empty($User))
             return false;
@@ -61,8 +71,8 @@ class Security
     {
         foreach($this->secured_paths as $index => $secured_path) {
             if(count(array_diff_assoc($secured_path, $path)) == 0) {
-                if(!self::Authenticate($this->roles[$index]))
-                    ErrorHandler::ThrowNew("Permision denied", "You don't have permision to view this ", 401);
+                if(!$this->Authenticate($this->roles[$index]))
+                    ErrorHandler::error("Permision denied", "You don't have permision to view this ", 401);
                 else
                     return true;
             }
@@ -74,7 +84,8 @@ class Security
      * @param string $password
      * @return string $hashed_password
      */
-    public static function Password($password) {
+    public static function Password($password) 
+    {
         return password_hash($password, PASSWORD_BCRYPT);
     }
 }

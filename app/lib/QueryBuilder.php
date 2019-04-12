@@ -14,9 +14,9 @@ class QueryBuilder
     function __construct()
     {
         $this->config = parse_ini_file("app/config.ini");
-        $this->mysqli = new mysqli("localhost", $this->config["login"], $this->config["password"], $this->config["dbname"]);
+        $this->mysqli = new mysqli($this->config["address"], $this->config["login"], $this->config["password"], $this->config["dbname"]);
         if ($this->mysqli->connect_errno) {
-            ErrorHandler::ThrowNew("Database problem!", $this->mysqli->connect_error , 500);
+            ErrorHandler::error("Database problem!", $this->mysqli->connect_error , 500);
         }
         $this->mysqli->set_charset('utf8');
         $this->connected = true;
@@ -35,7 +35,7 @@ class QueryBuilder
         }
         return $clean_inputs;
     }
-
+ 
     /**
      * Executes object query
      * @return mixed $result from query
@@ -162,7 +162,7 @@ class QueryBuilder
      */
     public function ShowColumns($table_name) {
         $columns = array();
-        $this->query = "SELECT column_name FROM information_schema.columns WHERE  table_name = '$table_name' AND table_schema = '" . $this->config["dbname"] . "'";
+        $this->query = "SELECT column_name FROM information_schema.columns WHERE table_name = '$table_name' AND table_schema = '" . $this->config["dbname"] . "'";
         foreach($this->Execute() as $column) {
             array_push($columns, $column->column_name);
         }

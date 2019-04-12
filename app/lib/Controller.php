@@ -12,12 +12,11 @@ require 'app/Lib/PhpMailer/SMTP.php';
 class Controller extends Loader
 {
     public $error_msg, $success_msg;
+    private $orm;
 
     function __construct()
     {
-        $this->LoadLib("Input");
-        $this->LoadLib("Security");
-        ORM::Setup();
+        $this->orm = new ORM();
     }
 
     public function Redirect($path, $delay = 0) {
@@ -38,7 +37,7 @@ class Controller extends Loader
         $mail->Port = 587;                                    
         $mail->SMTPDebug = false;
         $mail->CharSet = "UTF-8";
-        $mail->setFrom('tebexam.noreply@gmail.com', 'TebExam');
+        $mail->setFrom('email@email.com', 'password');
         $mail->isHTML(true);
         return $mail;        
     }
@@ -80,9 +79,7 @@ class Controller extends Loader
     {
         if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/app/view/" . $file . ".php")) {
             ob_end_clean();
-            ErrorHandler::ThrowNew("Template not found!",
-            "Requested template '$file' could not be found " . debug_backtrace()[0]["file"] .
-            " at line " . debug_backtrace()[0]["line"] . "" , 400);
+            throw new \Exception("Template $file not found - check /app/view");
         } else {
             http_response_code($status);
             extract($variables);
